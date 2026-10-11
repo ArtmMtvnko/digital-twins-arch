@@ -1,0 +1,29 @@
+graph TB
+    subgraph syncpart["Синхронізація стану, ділянки 1–5: 170 мс (NFR-01 ≤ 500 мс)"]
+        sensor["Датчик<br/>тиск, витрата, вібрація, температура"]
+        plc["ПЛК станції"]
+        gw["Шлюз станції"]
+        broker["MQTT-брокер"]
+        sync["Сервіс синхронізації"]
+        twin["Сервіс стану двійника<br/>Eclipse Ditto"]
+    end
+    web["Веб-застосунок"]
+    screen(["Екран оператора"])
+
+    sensor -->|"1) 20 мс<br/>аналоговий вхід, цикл ПЛК"| plc
+    plc -->|"2) 15 мс<br/>зчитування регістрів, мітка часу"| gw
+    gw -->|"3) 45 мс<br/>JSON, MQTT QoS 1, TLS, VPN"| broker
+    broker -->|"4) 10 мс<br/>доставка підписнику"| sync
+    sync -->|"5) 80 мс<br/>валідація, Ditto Protocol,<br/>HTTP, запис у MongoDB"| twin
+    twin -->|"6) 40 мс<br/>подія стану через SSE"| web
+    web -->|"7) 50 мс<br/>оновлення стану, рендер кадру"| screen
+
+    tsdb[("Сховище часових рядів<br/>TimescaleDB")]
+    analytics["Сервіс аналітики"]
+
+    sync -.->|"паралельно: пакетний запис<br/>історії й журналу, ≈ 1 с"| tsdb
+    twin -.->|"маршрут тривоги: подія стану, 20 мс"| analytics
+    analytics -.->|"перевірка правил 10 мс,<br/>запис тривоги 80 мс"| twin
+
+    classDef parallel stroke-dasharray: 5 5
+    class tsdb,analytics parallel
