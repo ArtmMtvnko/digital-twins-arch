@@ -1,0 +1,33 @@
+graph TB
+    subgraph edge["Станція — периферійний рівень"]
+        plc["Шафа керування<br/>ПЛК + ЧРП"]
+        gateway["Промисловий ПК<br/>шлюз станції + локальний буфер"]
+    end
+
+    subgraph dc["ЦОД водоканалу — платформний рівень, Docker"]
+        proxy["Зворотний проксі nginx<br/>TLS, автентифікація"]
+        broker["MQTT-брокер<br/>Mosquitto"]
+        sync["Сервіс синхронізації"]
+        twin["Сервіс стану двійника<br/>Eclipse Ditto"]
+        mongo[("MongoDB<br/>стан Ditto")]
+        history[("TimescaleDB<br/>історія, журнал")]
+        analytics["Сервіс аналітики"]
+        web["Статичні файли<br/>веб-застосунку"]
+    end
+
+    subgraph user["Користувацький рівень"]
+        browser["Браузер оператора / інженера<br/>React + Three.js"]
+    end
+
+    plc <-->|"OPC UA / Modbus<br/>локальна мережа станції"| gateway
+    gateway <-->|"MQTT поверх TLS, VPN водоканалу<br/>межа довіри: станція → ЦОД"| broker
+    broker <--> sync
+    sync <--> twin
+    twin --- mongo
+    sync --> history
+    analytics <--> history
+    analytics <--> twin
+    browser <-->|"HTTPS, SSE<br/>межа довіри: користувач → ЦОД"| proxy
+    proxy --> twin
+    proxy --> analytics
+    proxy --> web

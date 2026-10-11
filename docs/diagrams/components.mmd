@@ -1,0 +1,31 @@
+graph TB
+    plc["ПЛК станції"]
+    users(("Оператор,<br/>інженер"))
+
+    subgraph platform["Платформа цифрового двійника"]
+        gateway["Шлюз станції<br/>опитування ПЛК, СКЗ вібрації,<br/>мітки часу, буфер"]
+        broker["MQTT-брокер<br/>Eclipse Mosquitto"]
+        sync["Сервіс синхронізації<br/>валідація, reported / desired,<br/>диспетчер команд"]
+        twin["Сервіс стану двійника<br/>Eclipse Ditto"]
+        history[("Сховище часових рядів<br/>TimescaleDB")]
+        analytics["Сервіс аналітики<br/>енергоефективність,<br/>аномалії, тривоги"]
+        webapp["Веб-застосунок<br/>дашборд, тренди, 3D-сцена"]
+        security["Служби безпеки<br/>TLS, автентифікація, ролі"]
+    end
+
+    plc <-->|"OPC UA / Modbus"| gateway
+    gateway <-->|"MQTT: телеметрія,<br/>команди"| broker
+    broker <-->|"MQTT"| sync
+    sync -->|"HTTP: reported"| twin
+    twin -->|"події: desired"| sync
+    sync -->|"SQL: історія, журнал"| history
+    twin -->|"події стану"| analytics
+    analytics -->|"HTTP: тривоги"| twin
+    analytics <-->|"SQL: історія"| history
+    twin -->|"SSE: стан, тривоги"| webapp
+    webapp -->|"HTTP: desired"| twin
+    webapp -->|"HTTP: тренди, звіти"| analytics
+    users <--> webapp
+    security -.- broker
+    security -.- twin
+    security -.- webapp
