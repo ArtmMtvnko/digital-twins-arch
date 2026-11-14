@@ -1,0 +1,45 @@
+{
+  "title": "Двійник НСПТ: історія станів",
+  "uid": "nspt-history",
+  "schemaVersion": 39,
+  "time": { "from": "now-15m", "to": "now" },
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Тиск на виході та вібрація Н1",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"twin\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"twin_state\")\n  |> filter(fn: (r) => r._field == \"station_outletPressure\" or r._field == \"pump1_vibration\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Затримка синхронізації, мс (ціль NFR-01 — 500 мс)",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 10 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "thresholdsStyle": { "mode": "line" } },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "green", "value": null },
+                       { "color": "red", "value": 500 } ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"twin\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"twin_state\")\n  |> filter(fn: (r) => r._field == \"sync_ms\")\n  |> aggregateWindow(every: v.windowPeriod, fn: max, createEmpty: false)"
+        }
+      ]
+    }
+  ]
+}
