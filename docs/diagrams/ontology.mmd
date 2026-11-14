@@ -1,0 +1,38 @@
+graph TB
+    subgraph classes["Класи"]
+        Asset["Asset<br/>Актив"]
+        Sensor["Sensor<br/>Датчик"]
+        Obs["ObservableProperty<br/>Спостережувана величина"]
+        District["District<br/>Квартал"]
+        PumpStation["PumpStation"] -.->|subClassOf| Asset
+        PumpUnit["PumpUnit"] -.->|subClassOf| Asset
+        Motor["Motor"] -.->|subClassOf| Asset
+        PressureSensor["PressureSensor"] -.->|subClassOf| Sensor
+        VibrationSensor["VibrationSensor"] -.->|subClassOf| Sensor
+        OutletPressure["OutletPressure"] -.->|subClassOf| Obs
+        Vibration["VibrationVelocity"] -.->|subClassOf| Obs
+    end
+
+    subgraph individuals["Індивіди"]
+        district1(["district-1<br/>житловий квартал"])
+        station1(["station-1<br/>НСПТ"])
+        pump1(["pump-1<br/>агрегат Н1"])
+        pump2(["pump-2<br/>агрегат Н2"])
+        motor1(["motor-1<br/>двигун Н1"])
+        ptout(["pt-out<br/>датчик тиску"])
+        vs1(["vs-1<br/>віброперетворювач"])
+        pout(["outlet-pressure<br/>тиск на виході"])
+        vib1(["vibration-1<br/>вібрація Н1"])
+    end
+
+    station1 -->|serves| district1
+    station1 -->|hasPart| pump1
+    station1 -->|hasPart| pump2
+    pump1 -->|hasPart| motor1
+    station1 -->|hasSensor| ptout
+    pump1 -->|hasSensor| vs1
+    ptout -->|observes| pout
+    vs1 -->|observes| vib1
+    pump1 -.->|"partOf (виведено міркувачем)"| station1
+
+    note["Asset, Sensor, ObservableProperty і District не перетинаються<br/>hasPart — транзитивна, обернена до partOf"]

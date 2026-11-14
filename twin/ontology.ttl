@@ -1,0 +1,174 @@
+@prefix : <http://example.org/pumpstation#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/pumpstation> a owl:Ontology ;
+    rdfs:label "Онтологія насосної станції підвищення тиску"@uk .
+
+#################################################################
+#    Класи верхнього рівня
+#################################################################
+
+:Asset a owl:Class ;
+    rdfs:label "Актив"@uk ;
+    rdfs:comment "Фізичний об’єкт або його складова частина"@uk .
+
+:Sensor a owl:Class ;
+    rdfs:label "Датчик"@uk ;
+    rdfs:comment "Пристрій, що вимірює спостережувану величину"@uk .
+
+:ObservableProperty a owl:Class ;
+    rdfs:label "Спостережувана величина"@uk ;
+    rdfs:comment "Властивість активу, значення якої вимірюється або фіксується"@uk .
+
+:District a owl:Class ;
+    rdfs:label "Квартал"@uk ;
+    rdfs:comment "Житловий квартал, який обслуговує станція"@uk .
+
+[] a owl:AllDisjointClasses ;
+   owl:members ( :Asset :Sensor :ObservableProperty :District ) .
+
+#################################################################
+#    Підкласи активів
+#################################################################
+
+:PumpStation a owl:Class ; rdfs:subClassOf :Asset ;
+    rdfs:label "Насосна станція"@uk .
+:PumpUnit a owl:Class ; rdfs:subClassOf :Asset ;
+    rdfs:label "Насосний агрегат"@uk .
+:Motor a owl:Class ; rdfs:subClassOf :Asset ;
+    rdfs:label "Електродвигун"@uk .
+:ControlCabinet a owl:Class ; rdfs:subClassOf :Asset ;
+    rdfs:label "Шафа керування з ПЛК"@uk .
+
+[] a owl:AllDisjointClasses ;
+   owl:members ( :PumpStation :PumpUnit :Motor :ControlCabinet ) .
+
+#################################################################
+#    Підкласи датчиків
+#################################################################
+
+:PressureSensor a owl:Class ; rdfs:subClassOf :Sensor ;
+    rdfs:label "Датчик тиску"@uk .
+:FlowMeter a owl:Class ; rdfs:subClassOf :Sensor ;
+    rdfs:label "Витратомір"@uk .
+:VibrationSensor a owl:Class ; rdfs:subClassOf :Sensor ;
+    rdfs:label "Віброперетворювач"@uk .
+:TemperatureSensor a owl:Class ; rdfs:subClassOf :Sensor ;
+    rdfs:label "Датчик температури"@uk .
+
+#################################################################
+#    Підкласи спостережуваних величин (= @type у моделях TM)
+#################################################################
+
+:InletPressure a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Тиск на вході"@uk .
+:OutletPressure a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Тиск на виході"@uk .
+:Flow a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Витрата води"@uk .
+:DryRun a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Сухий хід"@uk .
+:StationMode a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Режим станції"@uk .
+:Setpoint a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Фактична уставка тиску"@uk .
+:VibrationVelocity a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Віброшвидкість (СКЗ)"@uk .
+:RotationalSpeed a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Частота обертання"@uk .
+:ElectricPower a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Електрична потужність"@uk .
+:BearingTemperature a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Температура підшипника"@uk .
+:PumpState a owl:Class ; rdfs:subClassOf :ObservableProperty ;
+    rdfs:label "Стан насоса"@uk .
+
+#################################################################
+#    Властивості-зв’язки (object properties)
+#################################################################
+
+:hasPart a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "має частину"@uk ;
+    rdfs:domain :Asset ; rdfs:range :Asset ;
+    owl:inverseOf :partOf .
+
+:partOf a owl:ObjectProperty ;
+    rdfs:label "є частиною"@uk .
+
+:hasSensor a owl:ObjectProperty ;
+    rdfs:label "має датчик"@uk ;
+    rdfs:domain :Asset ; rdfs:range :Sensor .
+
+:observes a owl:ObjectProperty ;
+    rdfs:label "вимірює"@uk ;
+    rdfs:domain :Sensor ; rdfs:range :ObservableProperty .
+
+:hasProperty a owl:ObjectProperty ;
+    rdfs:label "має величину"@uk ;
+    rdfs:domain :Asset ; rdfs:range :ObservableProperty .
+
+:serves a owl:ObjectProperty ;
+    rdfs:label "обслуговує"@uk ;
+    rdfs:domain :PumpStation ; rdfs:range :District .
+
+#################################################################
+#    Властивості-дані (data properties)
+#################################################################
+
+:serialNo a owl:DatatypeProperty ;
+    rdfs:label "заводський номер"@uk ;
+    rdfs:domain :Asset ; rdfs:range xsd:string .
+
+:samplingRate a owl:DatatypeProperty ;
+    rdfs:label "частота опитування, Гц"@uk ;
+    rdfs:domain :Sensor ; rdfs:range xsd:decimal .
+
+#################################################################
+#    Індивіди
+#################################################################
+
+:district-1 a :District ;
+    rdfs:label "Житловий квартал"@uk .
+
+:station-1 a :PumpStation ;
+    rdfs:label "НСПТ житлового кварталу"@uk ;
+    :serves :district-1 ;
+    :hasPart :pump-1 , :pump-2 , :cabinet-1 ;
+    :hasSensor :pt-out ;
+    :hasProperty :outlet-pressure .
+
+:pump-1 a :PumpUnit ;
+    rdfs:label "Насосний агрегат Н1"@uk ;
+    :serialNo "NA-2019-0417" ;
+    :hasPart :motor-1 ;
+    :hasSensor :vs-1 ;
+    :hasProperty :vibration-1 .
+
+:pump-2 a :PumpUnit ;
+    rdfs:label "Насосний агрегат Н2"@uk ;
+    :serialNo "NA-2019-0418" .
+
+:motor-1 a :Motor ;
+    rdfs:label "Електродвигун Н1"@uk .
+
+:cabinet-1 a :ControlCabinet ;
+    rdfs:label "Шафа керування з ПЛК"@uk .
+
+:pt-out a :PressureSensor ;
+    rdfs:label "Датчик тиску на виході"@uk ;
+    :samplingRate 1.0 ;
+    :observes :outlet-pressure .
+
+:vs-1 a :VibrationSensor ;
+    rdfs:label "Віброперетворювач Н1"@uk ;
+    :samplingRate 2560.0 ;
+    :observes :vibration-1 .
+
+:outlet-pressure a :OutletPressure ;
+    rdfs:label "Тиск на виході станції"@uk .
+
+:vibration-1 a :VibrationVelocity ;
+    rdfs:label "Вібрація Н1"@uk .
