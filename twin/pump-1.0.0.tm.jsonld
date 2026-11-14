@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    { "qudt": "http://qudt.org/vocab/unit/",
+      "ps": "http://example.org/pumpstation#" }
+  ],
+  "@type": ["tm:ThingModel", "ps:PumpUnit"],
+  "title": "Насосний агрегат",
+  "version": { "model": "1.0.0" },
+  "properties": {
+    "vibration": {
+      "@type": "ps:VibrationVelocity", "title": "Вібрація (СКЗ, максимум за 1 с)",
+      "type": "number", "unit": "qudt:MilliM-PER-SEC",
+      "minimum": 0, "maximum": 20, "observable": true
+    },
+    "speed": {
+      "@type": "ps:RotationalSpeed", "title": "Частота обертання",
+      "type": "number", "unit": "qudt:REV-PER-MIN",
+      "minimum": 0, "maximum": 3000, "observable": true
+    },
+    "power": {
+      "@type": "ps:ElectricPower", "title": "Електрична потужність",
+      "type": "number", "unit": "qudt:KiloW",
+      "minimum": 0, "maximum": 15, "observable": true
+    },
+    "bearingTemperature": {
+      "@type": "ps:BearingTemperature", "title": "Температура підшипника",
+      "type": "number", "unit": "qudt:DEG_C",
+      "minimum": 0, "maximum": 120, "observable": true
+    },
+    "state": {
+      "@type": "ps:PumpState", "title": "Стан насоса",
+      "type": "string", "enum": ["running", "standby", "stopped", "fault"],
+      "default": "standby", "observable": true
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    { "qudt": "http://qudt.org/vocab/unit/",
+      "ps": "http://example.org/pumpstation#" }
+  ],
+  "@type": ["tm:ThingModel", "ps:PumpStation"],
+  "title": "Насосна станція підвищення тиску",
+  "version": { "model": "1.0.0" },
+  "links": [
+    { "rel": "tm:submodel", "instanceName": "station",
+      "href": "http://web/twin/station-node-1.0.0.tm.jsonld",
+      "type": "application/tm+json" },
+    { "rel": "tm:submodel", "instanceName": "pump1",
+      "href": "http://web/twin/pump-1.0.0.tm.jsonld",
+      "type": "application/tm+json" },
+    { "rel": "tm:submodel", "instanceName": "pump2",
+      "href": "http://web/twin/pump-1.0.0.tm.jsonld",
+      "type": "application/tm+json" },
+    { "rel": "tm:submodel", "instanceName": "sync",
+      "href": "http://web/twin/sync-1.0.0.tm.jsonld",
+      "type": "application/tm+json" }
+  ],
+  "properties": {
+    "name": { "title": "Назва станції", "type": "string", "readOnly": true },
+    "address": { "title": "Адреса", "type": "string", "readOnly": true },
+    "ratedOutletPressure": { "title": "Номінальний тиск на виході",
+                             "type": "number", "unit": "qudt:BAR",
+                             "minimum": 0, "maximum": 10, "readOnly": true },
+    "pumpModel": { "title": "Модель насосів", "type": "string", "readOnly": true },
+    "pump1SerialNo": { "title": "Заводський номер Н1", "type": "string", "readOnly": true },
+    "pump2SerialNo": { "title": "Заводський номер Н2", "type": "string", "readOnly": true },
+    "district": { "title": "Квартал",
+                  "description": "Зв’язок serves: ідентифікатор двійника кварталу",
+                  "type": "string", "readOnly": true }
+  },
+  "actions": {
+    "set-setpoint": {
+      "title": "Змінити уставку тиску",
+      "input": { "type": "number", "unit": "qudt:BAR", "minimum": 4.0, "maximum": 6.0 }
+    },
+    "start-pump": {
+      "title": "Пустити насос",
+      "input": { "type": "string", "enum": ["pump1", "pump2"] }
+    },
+    "stop-pump": {
+      "title": "Зупинити насос",
+      "input": { "type": "string", "enum": ["pump1", "pump2"] }
+    },
+    "set-mode": {
+      "title": "Перемкнути режим",
+      "input": { "type": "string", "enum": ["auto", "night"] }
+    },
+    "acknowledge-alarm": {
+      "title": "Квитувати тривогу",
+      "input": { "type": "string", "title": "Хто квитує" }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    { "qudt": "http://qudt.org/vocab/unit/",
+      "ps": "http://example.org/pumpstation#" }
+  ],
+  "@type": "tm:ThingModel",
+  "title": "Вузли станції",
+  "version": { "model": "1.0.0" },
+  "properties": {
+    "inletPressure": {
+      "@type": "ps:InletPressure", "title": "Тиск на вході",
+      "type": "number", "unit": "qudt:BAR",
+      "minimum": 0, "maximum": 10, "observable": true
+    },
+    "outletPressure": {
+      "@type": "ps:OutletPressure", "title": "Тиск на виході",
+      "type": "number", "unit": "qudt:BAR",
+      "minimum": 0, "maximum": 10, "observable": true
+    },
+    "flow": {
+      "@type": "ps:Flow", "title": "Витрата води",
+      "type": "number", "unit": "qudt:M3-PER-HR",
+      "minimum": 0, "maximum": 120, "observable": true
+    },
+    "dryRun": {
+      "@type": "ps:DryRun", "title": "Сухий хід",
+      "type": "boolean", "default": false, "observable": true
+    },
+    "mode": {
+      "@type": "ps:StationMode", "title": "Режим станції",
+      "type": "string", "enum": ["auto", "night", "service", "emergency"],
+      "default": "auto", "observable": true
+    },
+    "setpoint": {
+      "@type": "ps:Setpoint", "title": "Фактична уставка тиску",
+      "type": "number", "unit": "qudt:BAR",
+      "minimum": 4.0, "maximum": 6.0, "default": 5.0, "observable": true
+    }
+  }
+}
