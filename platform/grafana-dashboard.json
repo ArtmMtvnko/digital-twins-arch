@@ -1,45 +1,218 @@
 {
-  "title": "Двійник НСПТ: історія станів",
-  "uid": "nspt-history",
-  "schemaVersion": 39,
-  "time": { "from": "now-15m", "to": "now" },
-  "refresh": "5s",
-  "panels": [
-    {
-      "id": 1,
-      "type": "timeseries",
-      "title": "Тиск на виході та вібрація Н1",
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
-      "targets": [
-        {
-          "refId": "A",
-          "query": "from(bucket: \"twin\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"twin_state\")\n  |> filter(fn: (r) => r._field == \"station_outletPressure\" or r._field == \"pump1_vibration\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
-        }
-      ]
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "nspt-history",
+    "namespace": "default",
+    "uid": "b7b5bb61-c042-4713-ade9-50260a7bbd3f",
+    "resourceVersion": "1794682357010999",
+    "generation": 1,
+    "creationTimestamp": "2026-11-14T18:52:36Z",
+    "labels": {
+      "grafana.app/deprecatedInternalID": "472112255324160"
     },
-    {
-      "id": 2,
-      "type": "timeseries",
-      "title": "Затримка синхронізації, мс (ціль NFR-01 — 500 мс)",
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 10 },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ms",
-          "custom": { "thresholdsStyle": { "mode": "line" } },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [ { "color": "green", "value": null },
-                       { "color": "red", "value": 500 } ]
-          }
-        },
-        "overrides": []
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "query": "from(bucket: \"twin\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"twin_state\")\n  |> filter(fn: (r) => r._field == \"sync_ms\")\n  |> aggregateWindow(every: v.windowPeriod, fn: max, createEmpty: false)"
-        }
-      ]
+    "annotations": {
+      "grafana.app/createdBy": "user:eg4a9ddbg543kf",
+      "grafana.app/folder": "",
+      "grafana.app/saved-from-ui": "Grafana v13.0.13 (5926a5c57f)"
     }
-  ]
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "datasource": {
+              "name": "-- Grafana --"
+            },
+            "spec": {}
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true,
+          "legacyOptions": {
+            "type": "dashboard"
+          }
+        }
+      }
+    ],
+    "cursorSync": "Off",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "id": 1,
+          "title": "Тиск на виході та вібрація Н1",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "",
+                      "version": "v0",
+                      "spec": {
+                        "query": "from(bucket: \"twin\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"twin_state\")\n  |> filter(fn: (r) => r._field == \"station_outletPressure\" or r._field == \"pump1_vibration\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "",
+            "spec": {
+              "options": {},
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-2": {
+        "kind": "Panel",
+        "spec": {
+          "id": 2,
+          "title": "Затримка синхронізації, мс (ціль NFR-01 — 500 мс)",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "",
+                      "version": "v0",
+                      "spec": {
+                        "query": "from(bucket: \"twin\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"twin_state\")\n  |> filter(fn: (r) => r._field == \"sync_ms\")\n  |> aggregateWindow(every: v.windowPeriod, fn: max, createEmpty: false)"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "",
+            "spec": {
+              "options": {},
+              "fieldConfig": {
+              "defaults": {
+                  "unit": "ms",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 500,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "custom": {
+                    "thresholdsStyle": {
+                      "mode": "line"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 10,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 10,
+              "width": 24,
+              "height": 10,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-2"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "from": "now-15m",
+      "to": "now",
+      "autoRefresh": "5s",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "Двійник НСПТ: історія станів",
+    "variables": []
+  }
 }
