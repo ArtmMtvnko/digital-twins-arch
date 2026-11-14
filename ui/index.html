@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Двійник насосної станції</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px;
+         background: #f4f6f9; color: #14202e; }
+  h2 { font-size: 18px; margin: 20px 0 8px; }
+  .grid { display: grid; gap: 12px;
+          grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .card { background: #fff; border-radius: 8px; padding: 12px 14px; }
+  .name { color: #5a6a7a; font-size: 14px; }
+  .value { font-size: 28px; font-weight: 600; }
+  .fresh { color: #1a7f37; } .late { color: #b58100; }
+  .stale { color: #c62828; }
+</style>
+</head>
+<body>
+<h1>Насосна станція <small id="thing"></small></h1>
+<p>Давність даних: <b id="age">—</b> ·
+   повідомлення № <span id="seq">—</span></p>
+<div id="groups"></div>
+<script>
+const THING = "org.pzks:station-1";
+const GROUPS = [          // назва групи, feature, [властивість, назва, одиниця, знаків]
+  ["Станція", "station", [
+    ["inletPressure", "Тиск на вході", "бар", 2],
+    ["outletPressure", "Тиск на виході", "бар", 2],
+    ["flow", "Витрата", "м³/год", 1],
+    ["setpoint", "Уставка", "бар", 1],
+    ["mode", "Режим", "", null],
+    ["dryRun", "Сухий хід", "", null]]],
+  ["Насос Н1", "pump1", [
+    ["state", "Стан", "", null],
+    ["vibration", "Вібрація (СКЗ)", "мм/с", 2],
+    ["speed", "Оберти", "об/хв", 0],
+    ["power", "Потужність", "кВт", 2],
+    ["bearingTemperature", "Температура підшипника", "°C", 1]]],
+  ["Насос Н2", "pump2", [
+    ["state", "Стан", "", null],
+    ["vibration", "Вібрація (СКЗ)", "мм/с", 2],
+    ["speed", "Оберти", "об/хв", 0],
+    ["power", "Потужність", "кВт", 2],
+    ["bearingTemperature", "Температура підшипника", "°C", 1]]],
+];
+const $ = id => document.getElementById(id);
+let sourceTs = 0;        // час останнього відліку на джерелі, мс
+
+$("thing").textContent = THING;
+for (const [title, f, props] of GROUPS) {
+  let html = `<h2>${title}</h2><div class="grid">`;
+  for (const [p, name, unit] of props) {
+    html += `<div class="card"><div class="name">${name}${unit ? ", " + unit : ""}</div>` +
+            `<div class="value" id="${f}-${p}">—</div></div>`;
+  }
+  $("groups").insertAdjacentHTML("beforeend", html + "</div>");
+}
+
+function show(v, digits) {
+  if (typeof v === "number" && digits !== null) return v.toFixed(digits);
+  if (typeof v === "boolean") return v ? "так" : "ні";
+  return String(v);
+}
+
+function apply(features) {   // оновлює кеш останнього відомого стану
+  for (const [, f, props] of GROUPS) {
+    for (const [p, , , digits] of props) {
+      const v = features[f]?.properties?.[p];
+      if (v !== undefined) $(`${f}-${p}`).textContent = show(v, digits);
+    }
+  }
+  const sync = features.sync?.properties;
+  if (sync) { sourceTs = sync.ts; $("seq").textContent = sync.seq; }
+}
+
+fetch(`/api/2/things/${THING}`)
+  .then(r => r.json()).then(t => apply(t.features ?? {}));
+const events = new EventSource(`/api/2/things?ids=${THING}&fields=features`);
+events.onmessage = e => {
+  if (e.data) apply(JSON.parse(e.data).features ?? {});
+};
+
+setInterval(() => {      // подання оновлюється 4 рази на секунду
+  if (!sourceTs) return;
+  const age = (Date.now() - sourceTs) / 1000;
+  $("age").textContent = `${age.toFixed(1)} с`;
+  $("age").className = age < 2 ? "fresh" : age < 10 ? "late" : "stale";
+}, 250);
+</script>
+</body>
+</html>
