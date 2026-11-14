@@ -65,3 +65,37 @@
 - онтологія **несуперечлива**;
 - міркувач **вивів зворотні зв’язки**: `pump-1 partOf station-1`, `pump-2 partOf station-1`, а завдяки транзитивності — ще й `motor-1 partOf station-1` (явно записано лише `station-1 hasPart pump-1` і `pump-1 hasPart motor-1`);
 - **помилку міркувач ловить:** якщо додати датчику тиску `pt-out` ще й тип `PumpUnit`, онтологія стає суперечливою, бо класи `Asset` і `Sensor` оголошено такими, що не перетинаються. Твердження після перевірки видалено.
+
+## Перевірка валідності
+
+**Створення примірника.** Спершу створено політику `twin/policy.json` (записи `OWNER` — повні права оператора платформи, `TELEMETRY` — лише запис стану для з’єднання MQTT), потім двійник з опису `twin/station-1.json`:
+
+```
+API=http://localhost:8080/api/2
+curl -u ditto:ditto -X PUT -H "Content-Type: application/json" \
+  --data @twin/policy.json $API/policies/org.pzks:station-1
+curl -u ditto:ditto -X PUT -H "Content-Type: application/json" \
+  --data @twin/station-1.json $API/things/org.pzks:station-1
+```
+
+Опис примірника містить лише посилання на модель (`definition`) і паспорт. Функціональні блоки Ditto побудував **сам з моделі**: `station`, `pump1`, `pump2`, `sync`. Числові властивості отримали значення 0, а властивості зі значенням за замовчуванням у моделі — це значення (`mode: "auto"`, `setpoint: 5.0`, `state: "standby"`, `dryRun: false`). Блоки `pump1` і `pump2` мають однакове посилання на модель `pump-1.0.0.tm.jsonld` — один тип, два примірники:
+
+```
+"pump1":{"definition":["http://web/twin/pump-1.0.0.tm.jsonld"],
+         "properties":{"vibration":0.0,"speed":0.0,"power":0.0,"bearingTemperature":0.0,"state":"standby"}},
+"pump2":{"definition":["http://web/twin/pump-1.0.0.tm.jsonld"], ...}
+```
+
+**Зміни стану.** Одна валідна й чотири невалідні зміни властивостей:
+
+| № | Зміна | Що порушено | Код | Відповідь Ditto (`validationDetails`) |
+|---|---|---|---|---|
+| 1 | `station/properties/outletPressure` = `4.8` | — (валідна) | **204** | — |
+| 2 | `station/properties/outletPressure` = `25` | максимум 10 бар | **400** | `maximum=must have a maximum value of 10` |
+| 3 | `station/properties/setpoint` = `6.5` | уставка поза 4,0–6,0 бар | **400** | `maximum=must have a maximum value of 6.0` |
+| 4 | `pump1/properties/state` = `"broken"` | значення не з переліку станів | **400** | `enum=does not have a value in the enumeration ["running", "standby", "stopped", "fault"]` |
+| 5 | `pump1/properties/rpm` = `1450` | властивості немає в моделі | **400** | `properties contained JSON fields which were not defined in the model: [rpm]` |
+
+Усі невалідні зміни відхилено з помилкою `wot:payload.validation.error`. Тобто модель типу не лише документує дані, а й **захищає двійник**: значення поза діапазоном реєстру сигналів не потраплять у стан навіть від з’єднання телеметрії — це другий рубіж якості даних після перевірки на шлюзі (FR-02).
+
+**Позначка `readOnly` запису не забороняє.** Паспортні атрибути в моделі позначено `"readOnly": true`, але це лише підказка для клієнтів у згенерованому описі Thing Description. Хто саме може змінювати двійник, визначає **політика**: власник (`OWNER`) має право запису на весь двійник, а з’єднання телеметрії (`TELEMETRY`) — лише на `thing:/features`, тож змінити паспорт воно не може.
