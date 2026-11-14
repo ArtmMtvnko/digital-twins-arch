@@ -1,0 +1,13 @@
+{
+  "definition": "http://web/twin/station-1.0.0.tm.jsonld",
+  "policyId": "org.pzks:station-1",
+  "attributes": {
+    "name": "НСПТ житлового кварталу",
+    "address": "м. Київ, вул. Прикладна, 1",
+    "ratedOutletPressure": 5.0,
+    "pumpModel": "Консольний насос 15 кВт, 2900 об/хв",
+    "pump1SerialNo": "NA-2019-0417",
+    "pump2SerialNo": "NA-2019-0418",
+    "district": "org.pzks:district-1"
+  }
+}
