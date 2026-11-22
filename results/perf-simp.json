@@ -1,0 +1,23 @@
+{
+  "label": "simp",
+  "opt": "simp",
+  "budget_ms": 16.67,
+  "frames": 2753,
+  "fps": 91.8,
+  "frame_p50_ms": 13.8,
+  "frame_p99_ms": 20.9,
+  "cpu_p50_ms": 4.9,
+  "cpu_p99_ms": 9.1,
+  "gpu_p50_ms": 2.23,
+  "gpu_p99_ms": 2.87,
+  "in_budget_pct": 99.9,
+  "calls_p50": 29,
+  "calls_max": 44,
+  "triangles_p50": 180284,
+  "triangles_max": 237652,
+  "textures_mb": 44.74,
+  "first_frame_ms": 5023,
+  "data_first_frame_mb": 5.26,
+  "data_total_mb": 13.38,
+  "requests": 93
+}
