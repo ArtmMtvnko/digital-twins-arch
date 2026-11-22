@@ -33,7 +33,7 @@ controls.update();
 
 // Великий набір даних — рельєф території: потокове завантаження тайлів
 export const tiles = new TilesRenderer('tiles/site/v1/tileset.json');
-tiles.errorTarget = 16;                        // ρ_max, пікселі
+tiles.errorTarget = Number(params.get('err') ?? 16);  // ρ_max, пікселі; ?err=32 — для порівняння
 tiles.lruCache.minBytesSize = 24 * 2 ** 20;    // бюджет кешу тайлів, байти
 tiles.lruCache.maxBytesSize = 32 * 2 ** 20;
 tiles.setCamera(camera);
