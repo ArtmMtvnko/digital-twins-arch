@@ -1,0 +1,19 @@
+{
+  "thing": "org.pzks:station-1",
+  "bindings": [
+    { "asset": "pump-1", "node": "motor", "feature": "pump1", "property": "power",
+      "title": "Н1 · потужність", "unit": "кВт", "min": 0, "max": 15 },
+    { "asset": "pump-1", "node": "pump", "feature": "pump1", "property": "vibration",
+      "title": "Н1 · вібрація (СКЗ)", "unit": "мм/с", "min": 0, "max": 4.5 },
+    { "asset": "pump-1", "node": "bearing", "feature": "pump1", "property": "bearingTemperature",
+      "title": "Н1 · температура підшипника", "unit": "°C", "min": 20, "max": 90 },
+    { "asset": "pump-1", "node": "sensor-p", "feature": "station", "property": "outletPressure",
+      "title": "Тиск на виході станції", "unit": "бар", "min": 0, "max": 10 },
+    { "asset": "pump-2", "node": "motor", "feature": "pump2", "property": "power",
+      "title": "Н2 · потужність", "unit": "кВт", "min": 0, "max": 15 },
+    { "asset": "pump-2", "node": "pump", "feature": "pump2", "property": "vibration",
+      "title": "Н2 · вібрація (СКЗ)", "unit": "мм/с", "min": 0, "max": 4.5 },
+    { "asset": "pump-2", "node": "bearing", "feature": "pump2", "property": "bearingTemperature",
+      "title": "Н2 · температура підшипника", "unit": "°C", "min": 20, "max": 90 }
+  ]
+}
