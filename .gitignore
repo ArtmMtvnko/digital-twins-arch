@@ -1,3 +1,5 @@
+.DS_Store
+
 __pycache__/
 
 .venv/
@@ -5,4 +7,6 @@ __pycache__/
 
 platform/ditto/
 
-.DS_Store
+scene/node_modules/
+scene/tiles/
+session/node_modules/

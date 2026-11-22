@@ -1,0 +1,10 @@
+{
+  "name": "session",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Сервер сеансу спільної 3D-сцени",
+  "dependencies": {
+    "ws": "8.22.1"
+  }
+}
